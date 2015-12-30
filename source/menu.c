@@ -623,6 +623,13 @@ bool pageControlPanelsDrawn = false;
 
 void drawGridWithPage(menu_s* m, int page, int pageYOffset, int pageXOffset, bool gridOnly) {
 
+    if (m && m->selectedEntry > -1) {
+        menuEntry_s *selectedEntry = getMenuEntry(m, m->selectedEntry);
+        if (selectedEntry && selectedEntry->hidden && m->numEntries > 1) {
+            m->selectedEntry = m->selectedEntry + 1;
+        }
+    }
+
     rgbColour * inactiveCol = inactiveColour();
     rgbColour * tintCol = tintColour();
 
