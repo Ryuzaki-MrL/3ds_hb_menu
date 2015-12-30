@@ -1335,19 +1335,24 @@ void keyBAction() {
 }
 
 void switchToolbarButtons() {
-    btnListUnHighlight(&toolbarButtons);
+    int newSelectedToolbarButton = dPadSelectedToolbarButton;
 
     if (dPadSelectedToolbarButton == 0) {
-        dPadSelectedToolbarButton = 1;
+        newSelectedToolbarButton = 1;
     }
     else if (dPadSelectedToolbarButton == 1) {
-        dPadSelectedToolbarButton = 0;
+        newSelectedToolbarButton = 0;
     }
     else if (dPadSelectedToolbarButton == 2) {
-        dPadSelectedToolbarButton = 3;
+        newSelectedToolbarButton = 3;
     }
     else if (dPadSelectedToolbarButton == 3) {
-        dPadSelectedToolbarButton = 2;
+        newSelectedToolbarButton = 2;
+    }
+
+    if (toolbarButtons.buttons[newSelectedToolbarButton]->visible) {
+        btnListUnHighlight(&toolbarButtons);
+        dPadSelectedToolbarButton = newSelectedToolbarButton;
     }
 }
 
