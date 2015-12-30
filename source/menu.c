@@ -125,8 +125,10 @@ char bannerImagePath[ENTRY_PATHLENGTH+1];
 bool bannerHasAlpha;
 bool drawBannerImage = false;
 
+bool firstIconHidden(menu_s* m);
+
 int indexOfFirstVisibleMenuEntry(menu_s *m) {
-    if (!showRegionFree && menuStatus == menuStatusIcons) {
+    if (firstIconHidden(m)) {
         return 1;
     }
     return 0;
@@ -477,7 +479,7 @@ void initMenu(menu_s* m)
      */
 	m->entries=NULL;
 	m->numEntries=0;
-    m->selectedEntry=indexOfFirstVisibleMenuEntry(m);
+    m->selectedEntry=0;//indexOfFirstVisibleMenuEntry(m);
 	m->scrollLocation=0;
 	m->scrollVelocity=0;
 	m->scrollBarSize=0;
@@ -916,7 +918,7 @@ void clearMenuEntries(menu_s* m)
 {
 	if(!m)return;
 
-	m->selectedEntry=indexOfFirstVisibleMenuEntry(m);
+	m->selectedEntry=0;//indexOfFirstVisibleMenuEntry(m);
 
 	menuEntry_s* me = m->entries;
 	menuEntry_s* temp = NULL;
@@ -1364,10 +1366,21 @@ void handleDPadToolbarActions(menu_s* m) {
     }
 }
 
+bool firstIconHidden(menu_s* m) {
+    if (m && m->numEntries > 0) {
+        menuEntry_s *me = getMenuEntry(m, 0);
+        if (me && me->hidden) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 int indexOfFirstVisibleMenuEntryOnPage(int page, menu_s* m) {
     int first = totalRows * totalCols * page;
 
-    if (!showRegionFree && menuStatus == menuStatusIcons) {
+    if (firstIconHidden(m)) {
         first++;
     }
 
@@ -1386,7 +1399,7 @@ int indexOfLastVisibleMenuEntryOnPage(int page, menu_s* m) {
     int last = totalRows * totalCols * (page+1);
     last--;
 
-    if (!showRegionFree) {
+    if (firstIconHidden(m)) {
         last++;
     }
 
