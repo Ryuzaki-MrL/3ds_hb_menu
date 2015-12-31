@@ -124,6 +124,7 @@ u8 bannerImage[400*222*4];
 char bannerImagePath[ENTRY_PATHLENGTH+1];
 bool bannerHasAlpha;
 bool drawBannerImage = false;
+int bannerImageWidth, bannerImageHeight;
 
 bool firstIconHidden(menu_s* m);
 
@@ -1937,10 +1938,13 @@ void loadBannerImage(menuEntry_s * me) {
     bool success = read_png_file(bannerImagePath);
 
     if (success) {
-        if (pngWidth != 400 || pngHeight != 222) {
-            logText("App banners must be 400x222 pixels");
+        if (pngWidth > 400 || pngHeight > 222) {
+            logText("App banners must be 400x222 pixels maximum");
         }
         else {
+            bannerImageWidth = pngWidth;
+            bannerImageHeight = pngHeight;
+
             u8 * out = process_png_file();
 
             if (out) {
@@ -2106,11 +2110,14 @@ int drawMenuEntry(menuEntry_s* me, gfxScreen_t screen, bool selected, menu_s *m,
             }
 
             if (drawBannerImage) {
+                int bannerImageY = (400/2) - (bannerImageWidth/2);
+                int bannerImageX = (222/2) - (bannerImageHeight/2);
+
                 if (bannerHasAlpha) {
-                    gfxDrawSpriteAlphaBlend(GFX_TOP, GFX_LEFT, (u8*)bannerImage, 222, 400, 0, 0);
+                    gfxDrawSpriteAlphaBlend(GFX_TOP, GFX_LEFT, (u8*)bannerImage, bannerImageHeight, bannerImageWidth, bannerImageX, bannerImageY);
                 }
                 else {
-                    gfxDrawSprite(GFX_TOP, GFX_LEFT, (u8*)bannerImage, 222, 400, 0, 0);
+                    gfxDrawSprite(GFX_TOP, GFX_LEFT, (u8*)bannerImage, bannerImageHeight, bannerImageWidth, bannerImageX, bannerImageY);
                 }
             }
         }
