@@ -2110,8 +2110,13 @@ int drawMenuEntry(menuEntry_s* me, gfxScreen_t screen, bool selected, menu_s *m,
             }
 
             if (drawBannerImage) {
-                int bannerImageY = (400/2) - (bannerImageWidth/2);
-                int bannerImageX = (222/2) - (bannerImageHeight/2);
+                int bannerImageY = 0;
+                int bannerImageX = 0;
+
+                if (me->bannerIsFullScreen) {
+                    bannerImageY = (400/2) - (bannerImageWidth/2);
+                    bannerImageX = (222/2) - (bannerImageHeight/2);
+                }
 
                 if (bannerHasAlpha) {
                     gfxDrawSpriteAlphaBlend(GFX_TOP, GFX_LEFT, (u8*)bannerImage, bannerImageHeight, bannerImageWidth, bannerImageX, bannerImageY);
