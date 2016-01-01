@@ -216,6 +216,8 @@ void renderFrame()
         drawThemeImage(themeImageBottomWallpaper, GFX_BOTTOM, 0, 0);
     }
 
+    drawBackground();
+
 //    drawWallpaper();
 
 	// // debug text
@@ -438,7 +440,7 @@ void renderFrame()
 
 
 
-    drawBackground();
+//    drawBackground();
 
     u8 * logoImage = NULL;
     int logoWidth = 0;
