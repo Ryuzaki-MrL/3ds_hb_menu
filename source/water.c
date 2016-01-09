@@ -2,6 +2,105 @@
 #include <math.h>
 #include <malloc.h>
 #include "water.h"
+#include "colours.h"
+#include "MAGFX.h"
+
+#include "stillwater_bin.h"
+#include "stillwaterborder_bin.h"
+
+#define BG_WATER_CONTROLPOINTS (100)
+#define BG_WATER_NEIGHBORHOODS (3)
+#define BG_WATER_DAMPFACTOR (0.7f)
+#define BG_WATER_SPRINGFACTOR (0.85f)
+#define BG_WATER_WIDTH (500)
+#define BG_WATER_OFFSET (-25)
+
+bool waterEnabled = true;
+bool hideWaves = false;
+bool waterAnimated = true;
+
+static waterEffect_s waterEffect;
+static int backgroundCnt;
+
+void initWater() {
+    initWaterEffect(&waterEffect, BG_WATER_CONTROLPOINTS, BG_WATER_NEIGHBORHOODS, BG_WATER_DAMPFACTOR, BG_WATER_SPRINGFACTOR, BG_WATER_WIDTH, BG_WATER_OFFSET);
+	backgroundCnt = 0;
+}
+
+#define waterTopLevel 50
+#define waterLevelDiff 5
+#define waterLowerLevel waterTopLevel - waterLevelDiff
+
+int topLevel = waterTopLevel;
+int lowerLevel = waterLowerLevel;
+
+int staticWaterX = 0;
+
+u8 tintedWater[70*400*4];
+u8 tintedWaterBorder[70*400*4];
+bool staticWaterDrawn = false;
+
+void drawWater() {
+    if (waterEnabled) {
+        rgbColour * waterTop = waterTopColour();
+        rgbColour * waterBottom = waterBottomColour();
+
+        if (!waterAnimated) {
+            if (hideWaves) {
+                if (staticWaterX > -70) {
+                    staticWaterX -= 2;
+                }
+            }
+            else {
+                if (staticWaterX < 0) {
+                    staticWaterX += 2;
+                }
+            }
+
+
+            if (!staticWaterDrawn) {
+                MAGFXImageWithRGBAndAlphaMask(waterBottom->r, waterBottom->g, waterBottom->b, (u8*)stillwater_bin, tintedWater, 70, 400);
+                MAGFXImageWithRGBAndAlphaMask(waterTop->r, waterTop->g, waterTop->b, (u8*)stillwaterborder_bin, tintedWaterBorder, 70, 400);
+                    staticWaterDrawn = true;
+            }
+
+
+            gfxDrawSpriteAlphaBlendFade(GFX_TOP, GFX_LEFT, tintedWater, 70, 400, staticWaterX, 0, translucencyWater);
+            gfxDrawSpriteAlphaBlendFade(GFX_TOP, GFX_LEFT, tintedWaterBorder, 70, 400, staticWaterX, 0, translucencyWater);
+            return;
+        }
+
+        if (hideWaves) {
+            if (lowerLevel > 0) {
+                topLevel -= 1;
+                lowerLevel -= 1;
+            }
+        }
+        else {
+            if (lowerLevel < waterLowerLevel) {
+                topLevel += 1;
+                lowerLevel += 1;
+            }
+        }
+
+
+        u8 * waterBorderColor = (u8[]){waterTop->r, waterTop->g, waterTop->b};
+        u8 * waterColor = (u8[]){waterBottom->r, waterBottom->g, waterBottom->b};
+
+        gfxDrawWave(GFX_TOP, GFX_LEFT, waterBorderColor, waterColor, topLevel, 20, 5, (gfxWaveCallback)&evaluateWater, &waterEffect);
+        gfxDrawWave(GFX_TOP, GFX_LEFT, waterColor, waterBorderColor, lowerLevel, 20, 0, (gfxWaveCallback)&evaluateWater, &waterEffect);
+    }
+}
+
+void updateWater() {
+    if (!waterAnimated) {
+        return;
+    }
+
+	exciteWater(&waterEffect, sin(backgroundCnt*0.1f)*2.0f, 0, true);
+	updateWaterEffect(&waterEffect);
+	backgroundCnt++;
+}
 
 void initWaterEffect(waterEffect_s* we, u16 n, u16 s, float d,  float sf, u16 w, s16 offset)
 {

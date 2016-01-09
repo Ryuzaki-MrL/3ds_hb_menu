@@ -3,7 +3,7 @@
 #include "config.h"
 #include "alert.h"
 #include "string.h"
-#include "background.h"
+#include "water.h"
 #include "settingsIconTheme_bin.h"
 #include "helpIconAbout_bin.h"
 #include "helpIconFolders_bin.h"

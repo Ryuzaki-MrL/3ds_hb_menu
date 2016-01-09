@@ -7,7 +7,7 @@
 
 #include "gfx.h"
 #include "menu.h"
-#include "background.h"
+#include "water.h"
 #include "statusbar.h"
 #include "filesystem.h"
 #include "netloader.h"
@@ -216,7 +216,7 @@ void renderFrame()
         drawThemeImage(themeImageBottomWallpaper, GFX_BOTTOM, 0, 0);
     }
 
-    drawBackground();
+    drawWater();
 
 //    drawWallpaper();
 
@@ -691,7 +691,8 @@ int main(int argc, char *argv[])
         mkdir(defaultThemePath, 777);
         mkdir(titleBannersPath, 777);
 
-        initBackground();
+//        initBackground();
+        initWater();
     }
 
 	startMs = osGetTime();
@@ -876,7 +877,7 @@ int main(int argc, char *argv[])
 		PTMU_GetBatteryChargeState(NULL, &charging);
 		hidScanInput();
 
-		updateBackground();
+		updateWater();
 
 		menuEntry_s* me = getMenuEntry(&menu, menu.selectedEntry);
 

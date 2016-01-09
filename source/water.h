@@ -15,6 +15,11 @@ typedef struct
 	float* controlPointSpeeds;
 }waterEffect_s;
 
+extern bool waterAnimated;
+extern bool hideWaves;
+extern bool waterEnabled;
+extern bool staticWaterDrawn;
+
 void initWaterEffect(waterEffect_s* we, u16 n, u16 s, float d, float sf, u16 w, s16 offset);
 void killWaterEffect(waterEffect_s* we);
 
@@ -22,5 +27,9 @@ float evaluateWater(waterEffect_s* we, u16 x);
 
 void exciteWater(waterEffect_s* we, float v, u16 k, bool absolute);
 void updateWaterEffect(waterEffect_s* we);
+
+void initWater();
+void drawWater();
+void updateWater();
 
 #endif

@@ -6,7 +6,7 @@
 
 #include "regionfree.h"
 #include "statusbar.h"
-#include "background.h"
+#include "water.h"
 #include "colours.h"
 #include "MAGFX.h"
 #include "filesystem.h"
