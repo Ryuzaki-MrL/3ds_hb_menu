@@ -201,7 +201,7 @@ void renderFrame()
     gfxFillColor(GFX_TOP, GFX_LEFT, (u8[]){bgc->r, bgc->g, bgc->b});
 
     //Wallpaper
-    if (themeImageExists(themeImageTopWallpaperInfo) && ((menuStatus == menuStatusHelp && showingHelpDetails) || menuStatus == menuStatusColourAdjust || menuStatus == menuStatusTranslucencyTop || menuStatus == menuStatusTranslucencyBottom || menuStatus == menuStatusPanelSettingsTop || menuStatus == menuStatusPanelSettingsBottom || menuStatus == menuStatusHansMissingError || menuStatus == menuStatusBootOptions || hbmenu_state == HBMENU_NETLOADER_ACTIVE || hbmenu_state == HBMENU_NETLOADER_UNAVAILABLE_NINJHAX2 || hbmenu_state == HBMENU_TITLETARGET_ERROR || showRebootMenu || !sdmcCurrent)) {
+    if (themeImageExists(themeImageTopWallpaperInfo) && ((menuStatus == menuStatusHelp && showingHelpDetails) || (menuStatus == menuStatusIcons && fullScreenBannerVisible) || menuStatus == menuStatusColourAdjust || menuStatus == menuStatusTranslucencyTop || menuStatus == menuStatusTranslucencyBottom || menuStatus == menuStatusPanelSettingsTop || menuStatus == menuStatusPanelSettingsBottom || menuStatus == menuStatusHansMissingError || menuStatus == menuStatusBootOptions || hbmenu_state == HBMENU_NETLOADER_ACTIVE || hbmenu_state == HBMENU_NETLOADER_UNAVAILABLE_NINJHAX2 || hbmenu_state == HBMENU_TITLETARGET_ERROR || showRebootMenu || !sdmcCurrent)) {
         drawThemeImage(themeImageTopWallpaperInfo, GFX_TOP, 0, 0);
     }
     else if (themeImageExists(themeImageTopWallpaper)) {

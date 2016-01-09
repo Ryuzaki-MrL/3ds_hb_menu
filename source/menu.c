@@ -47,6 +47,8 @@
 
 bool randomiseThemeOnWake = false;
 
+bool fullScreenBannerVisible = false;
+
 int menuStatusIcons = 0;
 int menuStatusSettings = 1;
 int menuStatusHelp = 2;
@@ -2159,6 +2161,8 @@ int drawMenuEntry(menuEntry_s* me, gfxScreen_t screen, bool selected, menu_s *m,
         int yAdjust = 20;
 
         int maximumTextWidth = 400-xPos-20;
+
+        fullScreenBannerVisible = (me->hasBanner && me->bannerIsFullScreen);
 
         if (!me->hasBanner || !me->bannerIsFullScreen) {
 //        if(1) {

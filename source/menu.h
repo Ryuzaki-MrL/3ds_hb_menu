@@ -147,6 +147,8 @@ extern menuEntry_s regionfreeEntry;
 extern menu_s menu;
 extern menu_s * bootOptionsMenu;
 
+extern bool fullScreenBannerVisible;
+
 //menu stuff
 void initMenu(menu_s* m);
 void drawMenu(menu_s* m);
