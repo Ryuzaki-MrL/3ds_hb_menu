@@ -1,5 +1,4 @@
 #include "addmenuentry.h"
-
 #include <cstdio>
 #include <cstring>
 #include <string>
@@ -7,9 +6,11 @@
 #include <algorithm>
 
 extern "C" {
-    #include "filesystem.h"
     #include "shortcut.h"
+    #include "filesystem.h"
 }
+
+
 
 bool comparisonFunc(const char *c1, const char *c2) {
     char * d1 = new char[strlen(c1)+1];

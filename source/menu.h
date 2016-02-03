@@ -36,6 +36,9 @@ extern int menuStatusPanelSettingsBottom;
 
 extern int menuStatusBootOptions;
 
+extern int menuStatusHBAppOptions;
+extern int menuStatusHBAppDeleteConfirmation;
+
 //Checked by main.c so that the menu can force the title browser to close
 extern bool killTitleBrowser;
 
@@ -125,6 +128,7 @@ typedef struct menuEntry_s
     bool isShortcut;
     bool bannerIsFullScreen;
     bool hasBanner;
+    bool isWithinContainingFolder;
 }menuEntry_s;
 
 typedef struct
@@ -183,5 +187,5 @@ void checkReturnToGrid(menu_s* m);
 
 menuEntry_s * updateMenuTicks(menu_s* m, char * selectedString, bool useExeecutablePath);
 void startTransition(int direction, int fromPage, menu_s* fromMenu);
-
+void reloadMenu(menu_s* m);
 

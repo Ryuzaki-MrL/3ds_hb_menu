@@ -76,6 +76,8 @@ int menuStatusPanelSettingsTop = 13;
 int menuStatusPanelSettingsBottom = 22;
 
 int menuStatusBootOptions = 23;
+int menuStatusHBAppOptions = 24;
+int menuStatusHBAppDeleteConfirmation = 25;
 
 bool killTitleBrowser = false;
 //bool thirdRowVisible = false;
@@ -303,6 +305,9 @@ void handleMenuTopLeftActions(int source) {
         }
     }
     else if (menuStatus == menuStatusBootOptions) {
+        setMenuStatus(menuStatusIcons);
+    }
+    else if (menuStatus == menuStatusHBAppOptions) {
         setMenuStatus(menuStatusIcons);
     }
     else {
@@ -1661,10 +1666,14 @@ bool updateGrid(menu_s* m) {
         if (menuStatus == menuStatusIcons || menuStatus == menuStatusHomeMenuApps) {
             if (dPadSelectedToolbarButton == -1) {
                 menuEntry_s *me = getMenuEntry(m, m->selectedEntry);
+                bootOptionsMenu = m;
+                alertSelectedButton = 0;
+
                 if (me->title_id > 0 || me->isRegionFreeEntry || me->isShortcut) {
-                    bootOptionsMenu = m;
-                    alertSelectedButton = 0;
                     setMenuStatus(menuStatusBootOptions);
+                }
+                else {
+//                    setMenuStatus(menuStatusHBAppOptions);
                 }
             }
         }

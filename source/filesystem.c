@@ -103,6 +103,8 @@ void addExecutableToMenu(menu_s* m, char* execPath)
 
 	if(fileExists(xmlPath, &sdmcArchive)) loadDescriptor(&tmpEntry.descriptor, xmlPath);
 
+	tmpEntry.isWithinContainingFolder = false;
+
 	addMenuEntryCopy(m, &tmpEntry);
 }
 
@@ -183,6 +185,8 @@ void addDirectoryToMenu(menu_s* m, char* path)
 	}
 
 	if(ret)initMenuEntry(&tmpEntry, execPath, &path[l+1], execPath, "", (u8*)installerIcon_bin);
+
+	tmpEntry.isWithinContainingFolder = true;
 
 	snprintf(xmlPath, 128, "%s/descriptor.xml", path);
 

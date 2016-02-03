@@ -432,6 +432,55 @@ void renderFrame()
                     }
                 }
             }
+            else if (menuStatus == menuStatusHBAppOptions) {
+                char buttonTitles[2][32];
+                strcpy(buttonTitles[0], "Delete app");
+                strcpy(buttonTitles[1], "Cancel");
+
+                menuEntry_s *me = getMenuEntry(bootOptionsMenu, bootOptionsMenu->selectedEntry);
+
+                int selectedButton = drawAlert("Homebrew App Options", me->name, NULL, 2, buttonTitles);
+
+                if (selectedButton == 0) {
+                    alertSelectedButton = 1;
+                    setMenuStatus(menuStatusHBAppDeleteConfirmation);
+                }
+                else if (selectedButton == 1 || selectedButton == alertButtonKeyB) {
+                    setMenuStatus(menuStatusIcons);
+                }
+            }
+            else if (menuStatus == menuStatusHBAppDeleteConfirmation) {
+                char buttonTitles[2][32];
+                strcpy(buttonTitles[0], "Delete");
+                strcpy(buttonTitles[1], "Cancel");
+
+                menuEntry_s *me = getMenuEntry(bootOptionsMenu, bootOptionsMenu->selectedEntry);
+
+                char deletePath[128];
+
+                if (me->isWithinContainingFolder) {
+                    int i, l=-1; for(i=0; me->executablePath[i]; i++) if(me->executablePath[i]=='/')l=i;
+                    strncpy(deletePath, me->executablePath, l);
+//                    deletePath = &me->executablePath[l+1];
+//                        deletePath = "The whole folder will be deleted";
+                }
+                else {
+                    strcpy(deletePath, me->executablePath);
+                }
+
+                int selectedButton = drawAlert("Are you sure you want to delete:", deletePath, NULL, 2, buttonTitles);
+
+                if (selectedButton == 0) {
+                    //Delete the app
+//                    remove(deletePath);
+//                    reloadMenu(&menu);
+                    setMenuStatus(menuStatusIcons);
+                }
+                else if (selectedButton == 1 || selectedButton == alertButtonKeyB) {
+                    alertSelectedButton = 0;
+                    setMenuStatus(menuStatusHBAppOptions);
+                }
+            }
             else {
                 drawMenu(&menu);
             }
@@ -1032,6 +1081,14 @@ int main(int argc, char *argv[])
             }
 
             else if (menuStatus == menuStatusBootOptions) {
+
+            }
+
+            else if (menuStatus == menuStatusHBAppOptions) {
+
+            }
+
+            else if (menuStatus == menuStatusHBAppDeleteConfirmation) {
 
             }
 
