@@ -40,6 +40,7 @@ u64 nextSdCheck = 0;
 
 bool die = false;
 bool dieImmediately = false;
+bool menuret = false;
 bool showRebootMenu = false;
 bool startRebootProcess = false;
 
@@ -47,6 +48,8 @@ char HansArg[ENTRY_PATHLENGTH+1];
 
 //Handle threadHandle, threadRequest;
 //#define STACKSIZE (4 * 1024)
+
+u32 menuret_enabled = 0;
 
 static enum
 {
@@ -75,9 +78,15 @@ extern void closeReboot() {
 }
 
 extern void doReboot() {
-    aptOpenSession();
-    APT_HardwareResetAsync();
-    aptCloseSession();
+    if (!menuret_enabled) {
+        aptOpenSession();
+        APT_HardwareResetAsync();
+        aptCloseSession();
+    }
+    else {
+        menuret = true;
+        die = true;
+    }
 }
 
 /*
@@ -244,10 +253,20 @@ void renderFrame()
                     drawRebootAlert = false;
                 }
 
-                strcpy(buttonTitles[0], "Rebooting...");
+                if (!menuret_enabled) {
+                    strcpy(buttonTitles[0], "Rebooting...");
+                }
+                else {
+                    strcpy(buttonTitles[0], "Exiting...");
+                }
             }
             else {
-                strcpy(buttonTitles[0], "Reboot");
+                if (!menuret_enabled) {
+                    strcpy(buttonTitles[0], "Reboot");
+                }
+                else {
+                    strcpy(buttonTitles[0], "Exit");
+                }
             }
 
             strcpy(buttonTitles[1], "Power off");
@@ -255,8 +274,15 @@ void renderFrame()
 
             int alertResult = -1;
 
-            if (drawRebootAlert)
-                alertResult = drawAlert("Power options", "Reboot:\nGo back to the system Home Menu\n\nPower off:\nShut down your 3DS", NULL, 3, buttonTitles);
+            if (drawRebootAlert) {
+                if (!menuret_enabled) {
+                    alertResult = drawAlert("Power options", "Reboot:\nGo back to the system Home Menu\n\nPower off:\nShut down your 3DS", NULL, 3, buttonTitles);
+                }
+                else {
+                    alertResult = drawAlert("Power options", "Exit:\nGo back to the system Home Menu\n\nPower off:\nShut down your 3DS", NULL, 3, buttonTitles);
+                }
+            }
+
 
             if (startRebootProcess) {
                 doReboot();
@@ -826,7 +852,8 @@ int main(int argc, char *argv[])
         startBGM();
     }
 
-
+    Handle kill=0;
+    if(srvGetServiceHandle(&kill, "hb:kill")==0)menuret_enabled = 1;
 
 //    logTextP("Enter main loop", "/bootlog.txt", true);
 
@@ -1114,6 +1141,12 @@ int main(int argc, char *argv[])
 //        logText("Die immediately");
 
         return 0;
+    }
+
+    if (menuret) {
+        exitServices();
+        svcSignalEvent(kill);
+        svcExitProcess();
     }
 
 //    logText("About to try to boot app");
