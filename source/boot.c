@@ -62,7 +62,7 @@ int bootApp(char* executablePath, executableMetadata_s* em, char* arg)
 {
 	// open file that we're going to boot up
 	fsInit();
-	FSUSER_OpenFileDirectly(&hbFileHandle, sdmcArchive, FS_makePath(PATH_CHAR, executablePath), FS_OPEN_READ, FS_ATTRIBUTE_NONE);
+	FSUSER_OpenFileDirectly(&hbFileHandle, sdmcArchive, fsMakePath(PATH_ASCII, executablePath), FS_OPEN_READ, 0);
 	fsExit();
 
 	// set argv/argc
