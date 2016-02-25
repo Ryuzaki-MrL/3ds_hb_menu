@@ -148,7 +148,7 @@ void exitServices() {
     freeThemeImages();
     netloader_exit();
     titlesExit();
-    ptmExit();
+    ptmuExit();
     acExit();
     hidExit();
     gfxExit();
@@ -776,7 +776,7 @@ int main(int argc, char *argv[])
 
 //	hidInit();
 	acInit();
-	ptmInit();
+	ptmuInit();
 	titlesInit();
 	regionFreeInit();
 	netloader_init();
@@ -948,9 +948,9 @@ int main(int argc, char *argv[])
 			nextSdCheck = osGetTime()+250;
 		}
 
-		ACU_GetWifiStatus(NULL, &wifiStatus);
-		PTMU_GetBatteryLevel(NULL, &batteryLevel);
-		PTMU_GetBatteryChargeState(NULL, &charging);
+		ACU_GetWifiStatus(&wifiStatus);
+		PTMU_GetBatteryLevel(&batteryLevel);
+		PTMU_GetBatteryChargeState(&charging);
 		hidScanInput();
 
 		updateWater();

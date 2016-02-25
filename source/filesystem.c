@@ -13,7 +13,7 @@
 #include "config.h"
 #include "logText.h"
 
-FS_archive sdmcArchive;
+FS_Archive sdmcArchive;
 
 void initFilesystem(void)
 {
@@ -29,7 +29,7 @@ void exitFilesystem(void)
 
 void openSDArchive()
 {
-	sdmcArchive=(FS_archive){0x00000009, (FS_path){PATH_EMPTY, 1, (u8*)""}};
+	sdmcArchive=(FS_Archive){0x00000009, (FS_Path){PATH_EMPTY, 1, (u8*)""}};
 	FSUSER_OpenArchive(&sdmcArchive);
 }
 
@@ -38,7 +38,7 @@ void closeSDArchive()
 	FSUSER_CloseArchive(&sdmcArchive);
 }
 
-int loadFile(char* path, void* dst, FS_archive* archive, u64 maxSize)
+int loadFile(char* path, void* dst, FS_Archive* archive, u64 maxSize)
 {
 	if(!path || !dst || !archive)return -1;
 
@@ -47,7 +47,7 @@ int loadFile(char* path, void* dst, FS_archive* archive, u64 maxSize)
 	Result ret;
 	Handle fileHandle;
 
-	ret=FSUSER_OpenFile(&fileHandle, *archive, FS_makePath(PATH_CHAR, path), FS_OPEN_READ, FS_ATTRIBUTE_NONE);
+	ret=FSUSER_OpenFile(&fileHandle, *archive, fsMakePath(PATH_ASCII, path), FS_OPEN_READ, 0);
 	if(ret!=0)return ret;
 
 	ret=FSFILE_GetSize(fileHandle, &size);
@@ -63,14 +63,14 @@ int loadFile(char* path, void* dst, FS_archive* archive, u64 maxSize)
 	return ret;
 }
 
-bool fileExists(char* path, FS_archive* archive)
+bool fileExists(char* path, FS_Archive* archive)
 {
 	if(!path || !archive)return false;
 
 	Result ret;
 	Handle fileHandle;
 
-	ret=FSUSER_OpenFile(&fileHandle, *archive, FS_makePath(PATH_CHAR, path), FS_OPEN_READ, FS_ATTRIBUTE_NONE);
+	ret=FSUSER_OpenFile(&fileHandle, *archive, fsMakePath(PATH_ASCII, path), FS_OPEN_READ, 0);
 	if(ret!=0)return false;
 
 	ret=FSFILE_Close(fileHandle);
@@ -202,7 +202,7 @@ void scanHomebrewDirectory(menu_s* m, char* path) {
     if(!path)return;
 
     Handle dirHandle;
-    FS_path dirPath=FS_makePath(PATH_CHAR, path);
+    FS_Path dirPath=fsMakePath(PATH_ASCII, path);
     FSUSER_OpenDirectory(&dirHandle, sdmcArchive, dirPath);
 
     static char fullPath[1024][1024];
@@ -210,8 +210,8 @@ void scanHomebrewDirectory(menu_s* m, char* path) {
     int totalentries = 0;
     do
     {
-        static FS_dirent entry;
-        memset(&entry,0,sizeof(FS_dirent));
+        static FS_DirectoryEntry entry;
+        memset(&entry,0,sizeof(FS_DirectoryEntry));
         entriesRead=0;
         FSDIR_Read(dirHandle, &entriesRead, 1, &entry);
         if(entriesRead)
@@ -219,7 +219,7 @@ void scanHomebrewDirectory(menu_s* m, char* path) {
             strncpy(fullPath[totalentries], path, 1024);
             int n=strlen(fullPath[totalentries]);
             unicodeToChar(&fullPath[totalentries][n], entry.name, 1024-n);
-            if(entry.isDirectory) //directories
+            if(entry.attributes & FS_ATTRIBUTE_DIRECTORY) //directories
             {
                 //addDirectoryToMenu(m, fullPath[totalentries]);
                 totalentries++;
@@ -339,18 +339,18 @@ directoryContents * contentsOfDirectoryAtPath(char * path, bool dirsOnly) {
     int numPaths = 0;
 
     Handle dirHandle;
-    FS_path dirPath=FS_makePath(PATH_CHAR, path);
+    FS_Path dirPath= fsMakePath(PATH_ASCII, path);
     FSUSER_OpenDirectory(&dirHandle, sdmcArchive, dirPath);
 
     u32 entriesRead;
     do
     {
-        static FS_dirent entry;
-        memset(&entry,0,sizeof(FS_dirent));
+        static FS_DirectoryEntry entry;
+        memset(&entry,0,sizeof(FS_DirectoryEntry));
         entriesRead=0;
         FSDIR_Read(dirHandle, &entriesRead, 1, &entry);
         if(entriesRead) {
-            if(!dirsOnly || (dirsOnly && entry.isDirectory)) {
+            if(!dirsOnly || (dirsOnly && (entry.attributes & FS_ATTRIBUTE_DIRECTORY))) {
                 char fullPath[1024];
                 strncpy(fullPath, path, 1024);
                 int n=strlen(path);
