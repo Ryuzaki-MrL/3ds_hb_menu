@@ -665,7 +665,7 @@ void saveConfigWithType(int configType) {
     //This doesn't actually need to log the type
     //It's only here because there's a weird bug with saving the config,
     //which adding a log seems to resolve
-    logTextP("Saving config", "/c.txt", false);
+    logTextP("Saving config", "/gridlauncher/c.txt", false);
 
     configData *data = configDataForType(configType);
     if (!data) {

@@ -14,6 +14,7 @@
 #include "regionfree.h"
 #include "boot.h"
 #include "titles.h"
+#include "mmap.h"
 #include "folders.h"
 #include "logodefault_bin.h"
 #include "logocompact_bin.h"
@@ -35,7 +36,7 @@
 #include "version.h"
 #include "sound.h"
 
-u8 sdmcCurrent = 0;
+bool sdmcCurrent = 0;
 u64 nextSdCheck = 0;
 
 bool die = false;
@@ -114,8 +115,10 @@ void launchSVDTFromTitleMenu() {
     if (me) {
         if (me->title_id) {
             if (me->title_id > 0) {
+                titleInfo_s target_title;
                 createTitleInfoFromTitleID(me->title_id, me->mediatype, &target_title);
-                targetProcessId = -2;
+                bootSetTargetTitle(target_title);
+//                targetProcessId = -2;
 
 //                titleInfo_s* ret = NULL;
 //                ret = getTitleWithID(&titleBrowser, me->title_id);
@@ -164,14 +167,16 @@ void launchTitleFromMenu(menu_s* m) {
     if (me) {
         if (me->title_id) {
             if (me->title_id > 0) {
+                titleInfo_s target_title;
                 createTitleInfoFromTitleID(me->title_id, me->mediatype, &target_title);
+                bootSetTargetTitle(target_title);
 
 //                titleInfo_s* ret = NULL;
 //                ret = getTitleWithID(&titleBrowser, me->title_id);
 
 //                if (ret) {
 //                    target_title = *ret;
-                    targetProcessId = -2;
+//                    targetProcessId = -2;
                     exitServices();
                     dieImmediately = true;
 
@@ -636,8 +641,7 @@ void handleMenuSelection() {
 
             if(ret)
             {
-                targetProcessId = -2;
-                target_title = *ret;
+                bootSetTargetTitle(*ret);
 //                logText("Die 1");
                 die = true;
                 return;
@@ -876,10 +880,10 @@ int main(int argc, char *argv[])
             u64 currentTitleID = 0;
 
             if (regionFreeGamecardIn) {
-                int num = 1;
+                u32 num = 1;
                 u64* tmp = (u64*)malloc(sizeof(u64) * num);
                 u8 mediatype = 2;
-                Result ret = AM_GetTitleIdList(mediatype, num, tmp);
+                Result ret = AM_GetTitleList(NULL, mediatype, num, tmp);
 
                 if (ret) {
                     logText("Error getting title");
@@ -955,17 +959,17 @@ int main(int argc, char *argv[])
 
 		updateWater();
 
-		menuEntry_s* me = getMenuEntry(&menu, menu.selectedEntry);
+		// menuEntry_s* me = getMenuEntry(&menu, menu.selectedEntry);
 
-        if (me) {
-            debugValues[50] = me->descriptor.numTargetTitles;
-            debugValues[51] = me->descriptor.selectTargetProcess;
-            if(me->descriptor.numTargetTitles)
-            {
-                debugValues[58] = (me->descriptor.targetTitles[0].tid >> 32) & 0xFFFFFFFF;
-                debugValues[59] = me->descriptor.targetTitles[0].tid & 0xFFFFFFFF;
-            }
-        }
+        // if (me) {
+            // debugValues[50] = me->descriptor.numTargetTitles;
+            // debugValues[51] = me->descriptor.selectTargetProcess;
+            // if(me->descriptor.numTargetTitles)
+            // {
+                // debugValues[58] = (me->descriptor.targetTitles[0].tid >> 32) & 0xFFFFFFFF;
+                // debugValues[59] = me->descriptor.targetTitles[0].tid & 0xFFFFFFFF;
+            // }
+        // }
 
 		if(hbmenu_state == HBMENU_NETLOADER_ACTIVE){
 			if(hidKeysDown()&KEY_B){
@@ -1174,7 +1178,9 @@ int main(int argc, char *argv[])
 
 	if(!strcmp(me->executablePath, REGIONFREE_PATH) && regionFreeAvailable && !netloader_boot) {
         if (hansTitleBoot) {
+            titleInfo_s target_title;
             createTitleInfoFromTitleID(me->title_id, me->mediatype, &target_title);
+            bootSetTargetTitle(target_title);
 
 //            if (me->isRegionFreeEntry) {
 //                titleList_s* tl = &(titleBrowser.lists[0]);
@@ -1188,7 +1194,7 @@ int main(int argc, char *argv[])
 //                target_title = *ret;
 //            }
 
-            targetProcessId = -2;
+//            targetProcessId = -2;
 
             regionFreeExit();
 //            logText("About to boot app using HANS");
